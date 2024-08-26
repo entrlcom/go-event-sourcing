@@ -22,8 +22,6 @@ import (
 	aggregate_model "entrlcom.dev/event-sourcing/domain/model/aggregate"
 	aggregate_id_model "entrlcom.dev/event-sourcing/domain/model/aggregate/id"
 	event_model "entrlcom.dev/event-sourcing/domain/model/event"
-	event_id_model "entrlcom.dev/event-sourcing/domain/model/event/id"
-	event_timestamp_model "entrlcom.dev/event-sourcing/domain/model/event/timestamp"
 	eventstore_repository "entrlcom.dev/event-sourcing/infra/repository/aggregate/eventstore"
 )
 
@@ -101,18 +99,7 @@ func (x *Account) ChangeName(name string) error {
 
 	data, _ := json.Marshal(event)
 
-	eventID, err := event_id_model.NewEventID()
-	if err != nil {
-		return err
-	}
-
-	timestamp, err := event_timestamp_model.NewEventTimestamp(time.Now().UTC())
-	if err != nil {
-		return err
-	}
-
 	e, err := event_model.NewBaseEvent(
-		eventID,
 		AccountNameChangedEventType,
 		event_model.WithAggregate(
 			x._aggregate.GetID(),
@@ -120,7 +107,6 @@ func (x *Account) ChangeName(name string) error {
 			x._aggregate.GetVersion(),
 		),
 		event_model.WithData(data),
-		event_model.WithTimestamp(timestamp),
 	)
 	if err != nil {
 		return err

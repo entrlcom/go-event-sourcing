@@ -95,11 +95,12 @@ func (x BaseEvent) Validate() error {
 	return nil
 }
 
-func NewBaseEvent(
-	id event_id_model.EventID,
-	type_ event_type_model.EventType,
-	opts ...EventOption,
-) (BaseEvent, error) {
+func NewBaseEvent(type_ event_type_model.EventType, opts ...EventOption) (BaseEvent, error) {
+	id, err := event_id_model.NewEventID()
+	if err != nil {
+		return BaseEvent{}, errors.Join(err, ErrInvalidEvent)
+	}
+
 	timestamp, err := event_timestamp_model.NewEventTimestamp(time.Now().UTC())
 	if err != nil {
 		return BaseEvent{}, errors.Join(err, ErrInvalidEvent)
@@ -148,6 +149,14 @@ func WithData(data []byte) EventOption {
 	return func(x Event) {
 		if event, ok := x.(*BaseEvent); ok {
 			event.data = data
+		}
+	}
+}
+
+func WithID(id event_id_model.EventID) EventOption {
+	return func(x Event) {
+		if event, ok := x.(*BaseEvent); ok {
+			event.id = id
 		}
 	}
 }
