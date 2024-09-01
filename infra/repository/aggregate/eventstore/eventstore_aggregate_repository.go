@@ -218,7 +218,6 @@ func NewEventFromRecordedEvent(recordedEvent *esdb.RecordedEvent) (event_model.E
 	}
 
 	event, err := event_model.NewBaseEvent(
-		eventID,
 		eventType,
 		event_model.WithAggregate(
 			streamID.GetAggregateID(),
@@ -226,6 +225,7 @@ func NewEventFromRecordedEvent(recordedEvent *esdb.RecordedEvent) (event_model.E
 			aggregateVersion,
 		),
 		event_model.WithData(recordedEvent.Data),
+		event_model.WithID(eventID),
 		event_model.WithTimestamp(eventTimestamp),
 	)
 	if err != nil {
